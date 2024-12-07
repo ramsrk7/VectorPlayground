@@ -142,35 +142,73 @@ class TextEmbeddingHandler:
             print(f"Error while plotting embeddings: {e}")
             raise
 
-    def scatter_plot_embeddings(self, embeddings: list, labels: list = None):
+    def scatter_plot_embeddings(self, embeddings: list, labels: list = None, response_type: str = "coordinates"):
         """
-        Scatter plot for visualizing embeddings in 2D.
-        :param embeddings: A list of embedding vectors.
-        :param labels: Optional list of labels for the embeddings.
+        Visualizes embeddings in 2D using PCA and returns coordinates or the plot as a base64 string.
+        
+        :param embeddings: A list of embeddings, each of shape (n_features,).
+        :param labels: Optional list of labels corresponding to the embeddings. Used for coloring the plot.
+        :param response_type: "coordinates" to return coordinates, "base64" to return the plot as a base64 string.
+        :return: Either the 2D coordinates of the embeddings or a base64 string of the plot.
         """
         try:
-            # Reduce embeddings to 2D using PCA
-            pca = PCA(n_components=2)
-            reduced_embeddings = pca.fit_transform(embeddings)
+            # Ensure embeddings are a numpy array
+            embeddings = np.array(embeddings)
 
-            plt.figure(figsize=(10, 10))
+            # Apply PCA to reduce dimensions to 2 if necessary
+            if embeddings.shape[1] > 2:
+                pca = PCA(n_components=2)
+                reduced_embeddings = pca.fit_transform(embeddings)
+            else:
+                reduced_embeddings = embeddings  # Already 2D
 
-            # Plot each embedding
-            for i, point in enumerate(reduced_embeddings):
-                plt.scatter(point[0], point[1], label=labels[i] if labels else f'Point {i+1}')
-                # Annotate with labels if provided
-                if labels:
-                    plt.annotate(labels[i], (point[0], point[1]), textcoords="offset points", xytext=(5, 5), ha='center')
+            if response_type == "coordinates":
+                # Return coordinates as a list of dictionaries
+                return [{"x": coord[0], "y": coord[1]} for coord in reduced_embeddings]
 
-            plt.title("Scatter Plot of Embeddings")
-            plt.xlabel("PCA Dimension 1")
-            plt.ylabel("PCA Dimension 2")
-            plt.grid()
-            plt.legend()
-            plt.show()
+            elif response_type == "base64":
+                # Plot the embeddings
+                plt.figure(figsize=(8, 8))
+                if labels is not None:
+                    labels = np.array(labels)
+                    unique_labels = np.unique(labels)
+                    for label in unique_labels:
+                        indices = np.where(labels == label)
+                        plt.scatter(
+                            reduced_embeddings[indices, 0],
+                            reduced_embeddings[indices, 1],
+                            label=f"Label {label}",
+                            s=100
+                        )
+                else:
+                    plt.scatter(
+                        reduced_embeddings[:, 0],
+                        reduced_embeddings[:, 1],
+                        s=100,
+                        color='blue'
+                    )
+
+                plt.title('2D Visualization of Embeddings')
+                plt.xlabel('Dimension 1')
+                plt.ylabel('Dimension 2')
+                if labels is not None:
+                    plt.legend()
+                plt.grid(True)
+
+                # Convert the plot to a base64 string
+                buffer = io.BytesIO()
+                plt.savefig(buffer, format="png", bbox_inches="tight")
+                buffer.seek(0)
+                base64_image = base64.b64encode(buffer.read()).decode("utf-8")
+                buffer.close()
+                plt.close()
+                return base64_image
+
+            else:
+                raise ValueError("Invalid response_type. Use 'coordinates' or 'base64'.")
+
         except Exception as e:
-            logger.error(f"Error while creating scatter plot: {e}")
-            print(f"Error while creating scatter plot: {e}")
+            print(f"Error in scatter_plot_embeddings: {e}")
             raise
     
     def plot_embeddings_as_lines(self, embeddings: list, labels: list = None):
@@ -279,19 +317,24 @@ if __name__ == "__main__":
         print("Getting embeddings for text1 and text2")
         embedding1 = handler.get_embedding(text3)
         embedding2 = handler.get_embedding(text2)
-        print("Embeddings: ", embedding1)
-        # Calculate Euclidean distance
-        distance = handler.calculate_euclidean_distance(embedding1, embedding2)
-        handler.plot_embedding_comparison_2d(embedding1=embedding1, embedding2=embedding2)
-        handler.scatter_plot_embeddings(embeddings=[embedding1,embedding2],labels=['A','B'])
-        handler.plot_embeddings_as_lines(embeddings=[embedding1,embedding2],labels=['A','B'])
-        # Plot comparison
-        handler.plot_embedding_comparison(embedding1, embedding2)
+        embedding3 = handler.get_embedding(text1)
 
-        # Calculate cosine similarity between embeddings
-        similarity = handler.calculate_cosine_similarity(embedding1, embedding2)
-        logger.info(f"Cosine Similarity between embeddings of text1 and text2: {similarity}")
-        print(f"Cosine Similarity between embeddings of text1 and text2: {similarity}")
+        print("Embeddings: ", embedding2)
+        coordinates = handler.scatter_plot_embeddings(embeddings=[embedding1,embedding2, embedding3])
+
+        print("Coordinates", coordinates)
+        # # Calculate Euclidean distance
+        # distance = handler.calculate_euclidean_distance(embedding1, embedding2)
+        # handler.plot_embedding_comparison_2d(embedding1=embedding1, embedding2=embedding2)
+        # handler.scatter_plot_embeddings(embeddings=[embedding1,embedding2],labels=['A','B'])
+        # handler.plot_embeddings_as_lines(embeddings=[embedding1,embedding2],labels=['A','B'])
+        # # Plot comparison
+        # handler.plot_embedding_comparison(embedding1, embedding2)
+
+        # # Calculate cosine similarity between embeddings
+        # similarity = handler.calculate_cosine_similarity(embedding1, embedding2)
+        # logger.info(f"Cosine Similarity between embeddings of text1 and text2: {similarity}")
+        # print(f"Cosine Similarity between embeddings of text1 and text2: {similarity}")
 
     except Exception as e:
         logger.error(f"Error in main execution: {e}")
