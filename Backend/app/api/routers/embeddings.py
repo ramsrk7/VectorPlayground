@@ -11,7 +11,10 @@ from app.api.schemas.embeddings import (
     SimilarityRequest,
     SimilarityResponse,
     DistanceResponse,
-    PlotResponse
+    PlotResponse,
+    EmbeddingCoordinatesRequest,
+    EmbeddingCoordinatesResponse,
+    Coordinate
 )
 import base64
 import io
@@ -69,3 +72,44 @@ def plot_comparison(request: SimilarityRequest) -> Any:
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
+@router.post(
+    "/embed-coordinates",
+    response_model=EmbeddingCoordinatesResponse,
+    summary="Generate Embedding Coordinates from a List of Texts"
+)
+def embed_coordinates(request: EmbeddingCoordinatesRequest) -> Any:
+    """
+    API endpoint to generate 2D coordinates for a list of input texts.
+    """
+    try:
+        if not request.texts:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The 'texts' list cannot be empty."
+            )
+        
+        embeddings = []
+        for text in request.texts:
+            embedding = embedding_handler.get_embedding(text=text, model=request.model)
+            embeddings.append(embedding)
+        
+        # Use scatter_plot_embeddings to get 2D coordinates
+        coordinates_list = embedding_handler.scatter_plot_embeddings(
+            embeddings=embeddings,
+            response_type="coordinates"
+        )
+        
+        # Combine texts with their coordinates
+        coordinates_response = EmbeddingCoordinatesResponse(
+            coordinates=[
+                Coordinate(text=text, x=coord["x"], y=coord["y"]) 
+                for text, coord in zip(request.texts, coordinates_list)
+            ]
+        )
+        
+        return coordinates_response
+
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
