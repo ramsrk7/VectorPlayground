@@ -3,7 +3,7 @@ import React from 'react';
 
 const InputCard = ({ id, text, handleTextChange, handleRemove }) => {
   return (
-    <div className="bg-white shadow-md rounded p-4 mb-4 flex items-center">
+    <div className="bg-red-50 shadow-md rounded p-4 mb-4 flex items-center font-mono">
       <input
         type="text"
         value={text}
