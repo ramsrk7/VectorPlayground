@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENV_VAR=your_value
+    networks:
+      - vector-playground-network
+
+  frontend:
+    build:
+      context: ./Frontend/ui
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - vector-playground-network
+
+networks:
+  vector-playground-network:
+    driver: bridge
