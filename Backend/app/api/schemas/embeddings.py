@@ -22,3 +22,15 @@ class DistanceResponse(BaseModel):
 
 class PlotResponse(BaseModel):
     image_base64: str  # Base64 encoded image
+
+class EmbeddingCoordinatesRequest(BaseModel):
+    texts: List[str] = Field(..., example=["Hello world", "FastAPI is great"])
+    model: Optional[str] = Field("light", description="Model to use for embedding generation. Options: 'v3', 'light', 'v2'.")
+
+class Coordinate(BaseModel):
+    text: str
+    x: float
+    y: float
+
+class EmbeddingCoordinatesResponse(BaseModel):
+    coordinates: List[Coordinate]
