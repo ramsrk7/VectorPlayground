@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage";
+import About from "./pages/About";
 
 import './css/style.css';
 
@@ -24,6 +25,7 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<About />} />
       </Routes>
 </>
   );
