@@ -5,7 +5,7 @@ import Header from '../partials/Header';
 
 const About = () => {
   // Initialize state for sidebar visibility
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     console.log('sidebarOpen:', sidebarOpen);

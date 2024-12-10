@@ -17,7 +17,7 @@ const HomePage = () => {
     const [coordinates, setCoordinates] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
 
     const handleTextChange = (id, value) => {
         setInputs(prev =>
@@ -52,7 +52,7 @@ const HomePage = () => {
         try {
             // Perform POST request to the server
             const response = await axios.post(
-                'http://127.0.0.1:8000/embeddings/embed-coordinates',
+                '/api/embeddings/embed-coordinates',
                 {
                     texts,  // Send texts array
                     model: 'light', // Include the model type
@@ -91,7 +91,7 @@ const HomePage = () => {
 
                 {/* Header */}
                 <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-                <header className="flex flex-col md:flex-row justify-between items-center p-4 bg-white shadow">
+                <header className="flex flex-col md:flex-row justify-between items-center p-4 bg-white shadow sm:pt-20">
                     <h1 className="text-2xl font-bold text-gray-700 font-mono pt-5">Text Visualizer</h1>
                     <div className="flex space-x-4 mt-4 md:mt-0">
                         <AddButton onAdd={handleAdd} className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600" />

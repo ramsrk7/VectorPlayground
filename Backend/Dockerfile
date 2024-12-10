@@ -1,5 +1,5 @@
-# Use official Python image as the base
-FROM python:3.11-slim
+# Use official Python image as the base with specified platform
+FROM --platform=linux/arm64 python:3.11-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -21,4 +21,3 @@ EXPOSE 8000
 
 # Command to run the FastAPI app with Uvicorn
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--reload", "--port", "8000"]
-
