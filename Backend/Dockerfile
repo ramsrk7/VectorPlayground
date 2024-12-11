@@ -1,5 +1,5 @@
 # Use official Python image as the base with specified platform
-FROM --platform=linux/arm64 python:3.11-slim
+FROM --platform=linux/amd64 python:3.11-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
