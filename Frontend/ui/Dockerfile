@@ -1,6 +1,8 @@
 # Stage 1: Build the React app
 FROM --platform=linux/amd64 node:18-alpine AS build
 
+RUN apt-get update && apt-get install -y curl wget && rm -rf /var/lib/apt/lists/*
+
 # Set working directory
 WORKDIR /app
 
