@@ -3,12 +3,10 @@ version: '3.8'
 services:
   app:
     build:
-      context: .  # Path to the directory containing the Dockerfile
+      context: Frontend/ui  # Path to the directory containing the Dockerfile
       dockerfile: Dockerfile
-      platform: linux/amd64  # Ensure compatibility with your host
     ports:
-      - "80:80"      # Map container's port 80 to host's port 80 for frontend
-      - "8000:8000"  # Map container's port 8000 to host's port 8000 for backend
+      - "8008:80"      # Map container's port 80 to host's port 80 for frontend Map container's port 8000 to host's port 8000 for backend
     volumes:
       - .:/app  # Optional: Mounts the current directory for live development
     environment:
