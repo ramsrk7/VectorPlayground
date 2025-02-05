@@ -9,6 +9,7 @@ nest_asyncio.apply()
 from app.helpers.utils import setup_llm, setup_embed_model, setup_vector_store, get_documents_from_docstore, ingest, create_index, create_query_engine, create_query_pipeline
 from app.helpers.text_cleaning_helpers import clean
 from llama_index.core.settings import Settings
+from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core import Document
 import fitz
 from llama_index.core.storage.docstore import SimpleDocumentStore
@@ -19,12 +20,16 @@ from llama_index.core import StorageContext
 
 from llama_index.core.query_pipeline import InputComponent
 
+Settings.embed_model = OpenAIEmbedding(
+    model="text-embedding-ada-002", embed_batch_size=100
+)
+
 
 logger = setup_logging()
 
 #OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
-class Indexer:
+class NaiveIndexer:
     def __init__(self):
         logger.info("Initializing TextEmbeddingHandler")
         self.OPENAI_API_KEY = settings.OPENAI_API_KEY
@@ -48,7 +53,7 @@ class Indexer:
         logger.info(self.OPENAI_API_KEY)
         setup_embed_model(
             provider="openai", 
-        
+            model="text-embedding-ada-002",
             api_key=self.OPENAI_API_KEY
             )
 
@@ -217,7 +222,7 @@ class Indexer:
         # Persist the document store to disk
         storage_context.persist("../database/persist/sample")
 
-    def index(self, index_store="../database/persist/sample"):
+    def query(self, question, index_store="../database/persist/sample"):
         documents = get_documents_from_docstore(index_store)
         logger.info(f"Retrived Sample Document: {documents[0].__dict__}")
 
@@ -238,7 +243,7 @@ class Indexer:
         logger.info("Setting up Embed Model")
         setup_embed_model(
             provider="openai", 
-        
+            model="text-embedding-ada-002",
             api_key=self.OPENAI_API_KEY
             )
         vector_store = setup_vector_store(self.QDRANT_URL, self.QDRANT_API_KEY, COLLECTION_NAME)
@@ -272,7 +277,7 @@ class Indexer:
 
         query_pipeline = create_query_pipeline(chain)
 
-        response_1 = query_pipeline.run(input="tell me about tokens in the self-attention layers of the Transformer ")
+        response_1 = query_pipeline.run(input=question)
 
         logger.info(f"Response: {response_1}")
 
@@ -282,7 +287,7 @@ class Indexer:
 
 if __name__ == "__main__":
     print("In Main Block")
-    handler = Indexer()
+    handler = NaiveIndexer()
     print("Initialized handler")
     handler.persist()
-    handler.index()
+    handler.query(question="tell me about tokens in the self-attention layers of the Transformer ")
