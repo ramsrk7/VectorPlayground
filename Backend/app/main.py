@@ -2,7 +2,8 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routers import embeddings
+from app.api.routers import embeddings, indexer
+from fastapi.responses import JSONResponse
 
 app = FastAPI(
     title="Text Embedding API",
@@ -22,7 +23,9 @@ app.add_middleware(
 # Include the embeddings router
 app.include_router(embeddings.router)
 
+app.include_router(indexer.router)
+
 # Optionally, add a root endpoint
 @app.get("/", tags=["Root"])
 def read_root():
-    return {"message": "Welcome to the Text Embedding API"}
+    return JSONResponse(content={"status": "ok"}, status_code=200)

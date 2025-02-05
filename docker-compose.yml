@@ -1,28 +1,14 @@
 version: '3.8'
 
 services:
-  backend:
+  app:
     build:
-      context: ./Backend
+      context: Frontend/ui  # Path to the directory containing the Dockerfile
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8008:80"      # Map container's port 80 to host's port 80 for frontend Map container's port 8000 to host's port 8000 for backend
+    volumes:
+      - .:/app  # Optional: Mounts the current directory for live development
     environment:
-      - ENV_VAR=your_value
-    networks:
-      - vector-playground-network
-
-  frontend:
-    build:
-      context: ./Frontend/ui
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-    networks:
-      - vector-playground-network
-
-networks:
-  vector-playground-network:
-    driver: bridge
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
