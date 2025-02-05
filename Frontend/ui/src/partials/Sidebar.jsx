@@ -114,6 +114,47 @@ function Sidebar({
                             </NavLink>
                         </li>
 
+                        {/*Naive RAG*/}
+                        <li
+                            className={`pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-[linear-gradient(135deg,var(--tw-gradient-stops))] ${pathname.includes("naiverag") &&
+                                "from-red-500/[0.42] dark:from-red-500/[0.44] to-red-500/[0.44]"
+                                }`}
+                        >
+                            <NavLink
+                                end
+                                to="/naiverag"
+                                className={`block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${pathname.includes("naiverag") ? "" : "hover:text-gray-900 dark:hover:text-white"
+                                    }`}
+                            >
+                                <div className="flex items-center">
+                                    <svg
+                                        className={`shrink-0 fill-current ${pathname === "/naiverag" || pathname.includes("naiverag") ? "text-red-500" : "text-gray-400 dark:text-gray-500"
+                                            }`}
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 16 16"
+                                    >
+                                        <text
+                                            x="50%"
+                                            y="50%"
+                                            textAnchor="middle"
+                                            dominantBaseline="middle"
+                                            fontSize="10"
+                                            fontFamily="Brush Script MT, cursive"
+                                            fill="currentColor"
+                                        >
+                                            NR
+                                        </text>
+                                    </svg>
+
+                                    <span className="text-sm font-medium font-mono ml-4 duration-200">
+                                        Naive RAG
+                                    </span>
+                                </div>
+                            </NavLink>
+                        </li>
+
                         {/* About */}
                         <li
                             className={`pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-[linear-gradient(135deg,var(--tw-gradient-stops))] ${pathname.includes("about") &&

@@ -28,7 +28,7 @@ export default defineConfig({
       '/api': {
         target: 'http://backend-service.dev2:80', // Backend URL
         changeOrigin: true, // Changes the origin of the request to the target URL
-        rewrite: (path) => path.replace(/^\/api/, ''), // Removes '/api' prefix
+        rewrite: (path) => path.replace(/^\/platform/, ''), // Removes '/api' prefix
       },
     },
   },
