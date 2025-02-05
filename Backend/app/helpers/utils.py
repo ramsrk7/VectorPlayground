@@ -3,7 +3,6 @@ import time
 #from datasets import Dataset
 from tqdm import tqdm
 from collections import defaultdict
-from IPython.display import Markdown, display
 from qdrant_client import QdrantClient, AsyncQdrantClient
 from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.core.ingestion import IngestionPipeline
